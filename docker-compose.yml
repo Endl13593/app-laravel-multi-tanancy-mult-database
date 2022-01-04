@@ -1,7 +1,7 @@
 version: "3.7"
 services:
     # image project
-    laravel_8:
+    app-laravel:
         build:
             args:
                 user: ${USER_DOCKER}
