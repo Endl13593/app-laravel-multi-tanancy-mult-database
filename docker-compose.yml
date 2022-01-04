@@ -1,0 +1,96 @@
+version: "3.7"
+services:
+    # image project
+    laravel_8:
+        build:
+            args:
+                user: ${USER_DOCKER}
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        container_name: app-laravel-multi-tenancy
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - redis
+            - queue
+        networks:
+            - laravel-multi-tenancy
+
+    # nginx
+    nginx:
+        image: nginx:alpine
+        container_name: nginx-multi-tenancy
+        restart: unless-stopped
+        ports:
+            - "8180:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - laravel-multi-tenancy
+
+    # db mysql
+    mysql:
+        image: mysql:8.0.26
+        container_name: mysql-multi-tenancy
+        command: --innodb-use-native-aio=0
+        restart: unless-stopped
+        tty: true
+        environment:
+            MYSQL_DATABASE: "${DB_DATABASE}"
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+            MYSQL_PASSWORD: "${DB_PASSWORD}"
+        volumes:
+            - ./.docker/mysql/dbdata:/var/lib/mysql
+        networks:
+            - laravel-multi-tenancy
+
+    # phpmyadmin
+    phpmyadmin:
+        build: docker/phpmyadmin
+        container_name: phpmyadmin-multi-tenancy
+        environment:
+            PMA_HOST: "${DB_HOST}"
+            PMA_PORT: "${DB_PORT}"
+            PMA_USER: "${DB_USERNAME}"
+            PMA_PASSWORD: "${DB_PASSWORD}"
+            PMA_VERBOSE: "LARAVEL-MULTI-TENANCY"
+            UPLOAD_LIMIT: "20M"
+        ports:
+            - "8086:80"
+        volumes:
+            - .docker/phpmyadmin/data/sessions:/sessions
+        networks:
+            - laravel-multi-tenancy
+
+    # queue
+    queue:
+        build:
+            args:
+                user: ${USER_DOCKER}
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        container_name: queue-multi-tenancy
+        command: "php artisan queue:work"
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - redis
+        networks:
+            - laravel-multi-tenancy
+
+    # redis
+    redis:
+        image: redis:latest
+        container_name: redis-multi-tenancy
+        networks:
+            - laravel-multi-tenancy
+
+networks:
+    laravel-multi-tenancy:
+        driver: bridge
