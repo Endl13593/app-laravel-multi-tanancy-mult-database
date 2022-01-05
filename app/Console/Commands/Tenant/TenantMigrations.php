@@ -16,7 +16,7 @@ class TenantMigrations extends Command
      *
      * @var string
      */
-    protected $signature = 'tenants:migrations {--refresh}';
+    protected $signature = 'tenants:migrations {id?} {--refresh}';
 
     /**
      * The console command description.
@@ -44,22 +44,40 @@ class TenantMigrations extends Command
      */
     public function handle()
     {
-        $command = $this->option('refresh') ? 'migrate:refresh' : 'migrate';
+        if ($id = $this->argument('id')) {
+            $tenant = Tenant::find($id);
+
+            if (!$tenant) {
+                $this->info("Tenant not found!");
+                return;
+            }
+
+            $this->execCommand($tenant);
+
+            return;
+        }
 
         $tenants = Tenant::all();
 
         foreach ($tenants as $tenant) {
-            $this->managerTenant->setConnection($tenant);
-
-            $this->info("Connecting Tenant {$tenant->name}");
-
-            Artisan::call($command, [
-                '--force' => true,
-                '--path'  => '/database/migrations/tenant',
-            ]);
-
-            $this->info("End Connecting Tenant {$tenant->name}");
-            $this->info('-------------------------------------');
+            $this->execCommand($tenant);
         }
+    }
+
+    private function execCommand(Tenant $tenant)
+    {
+        $command = $this->option('refresh') ? 'migrate:refresh' : 'migrate';
+
+        $this->managerTenant->setConnection($tenant);
+
+        $this->info("Connecting Tenant {$tenant->name}");
+
+        Artisan::call($command, [
+            '--force' => true,
+            '--path'  => '/database/migrations/tenant',
+        ]);
+
+        $this->info("End Connecting Tenant {$tenant->name}");
+        $this->info('-------------------------------------');
     }
 }
