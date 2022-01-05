@@ -17,7 +17,7 @@ class CheckDomainMain
     public function handle(Request $request, Closure $next)
     {
         if ($request->getHost() !== config('tenant.domain_main')) {
-            abort(401);
+            abort(401, 'Acesso não autorizado');
         }
 
         return $next($request);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Events\Tenant\DatabaseCreated;
+use App\Events\Tenant\TenantCreated;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Models\Tenant;
@@ -21,13 +23,18 @@ class TenantController extends Controller
         $random = Str::random(5);
 
         $tenant = $this->tenant->create([
-            'name' => 'Empresa ' . $random,
-            'domain' => 'empresa' . $random . '.multitenancy.local',
-            'db_database' => 'db_empresa' . $random,
+            'name' => strtolower('Empresa ' . $random),
+            'domain' => strtolower('empresa' . $random . '.multitenancy.local'),
+            'db_database' => 'db_empresaxysde',
             'db_hostname' => 'mysql',
             'db_username' => 'root',
             'db_password' => 'root'
         ]);
+
+        if (true)
+            event(new TenantCreated($tenant));
+        else
+            event(new DatabaseCreated($tenant));
 
         dd($tenant);
     }

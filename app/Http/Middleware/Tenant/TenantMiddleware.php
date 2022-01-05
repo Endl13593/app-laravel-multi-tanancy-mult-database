@@ -19,6 +19,10 @@ class TenantMiddleware
     public function handle(Request $request, Closure $next)
     {
         $managerTenant = app(ManagerTenant::class);
+
+        if ($managerTenant->domainIsMain())
+            return $next($request);
+
         $tenant = $this->getTenant($request->getHost());
 
         if (!$tenant && $request->url() != route('404.tenant')) {

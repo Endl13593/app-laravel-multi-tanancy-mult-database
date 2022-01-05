@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\Tenant\DatabaseCreated;
+use App\Events\Tenant\TenantCreated;
+use App\Listeners\Tenant\CreateTenantDatabase;
+use App\Listeners\Tenant\RunMigrationsTenant;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -15,9 +19,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        TenantCreated::class => [
+            CreateTenantDatabase::class
         ],
+        DatabaseCreated::class => [
+            RunMigrationsTenant::class
+        ]
     ];
 
     /**
