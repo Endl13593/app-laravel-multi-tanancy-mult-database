@@ -72,10 +72,18 @@ class TenantMigrations extends Command
 
         $this->info("Connecting Tenant {$tenant->name}");
 
-        Artisan::call($command, [
+        $artisan = Artisan::call($command, [
             '--force' => true,
             '--path'  => '/database/migrations/tenant',
         ]);
+
+        if ($artisan === 0) {
+            Artisan::call('db:seed', [
+                '--class'  => 'TenantsUserSeeder',
+            ]);
+
+            $this->info("Migrations Run Success {$tenant->name}");
+        }
 
         $this->info("End Connecting Tenant {$tenant->name}");
         $this->info('-------------------------------------');

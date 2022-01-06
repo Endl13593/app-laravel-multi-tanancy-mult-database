@@ -22,6 +22,7 @@ class CreateTenantsTable extends Migration
             $table->string('db_username');
             $table->string('db_password');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

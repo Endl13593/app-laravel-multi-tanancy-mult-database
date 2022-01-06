@@ -29,13 +29,20 @@ class TenantMiddleware
             return redirect()->route('404.tenant');
         } else if ($request->url() != route('404.tenant') && !$managerTenant->domainIsMain()){
             $managerTenant->setConnection($tenant);
+
+            $this->setSessionTenant($tenant->only(['name']));
         }
 
         return $next($request);
     }
 
-    public function getTenant(string $domain)
+    private function getTenant(string $domain)
     {
         return Tenant::where('domain', $domain)->first();
+    }
+
+    private function setSessionTenant(array $tenant)
+    {
+        session()->put('tenant', $tenant);
     }
 }
