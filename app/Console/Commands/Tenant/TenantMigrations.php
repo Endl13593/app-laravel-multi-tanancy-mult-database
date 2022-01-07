@@ -5,6 +5,7 @@ namespace App\Console\Commands\Tenant;
 use App\Models\Tenant;
 use App\Services\Tenant\ManagerTenant;
 use Illuminate\Console\Command;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
 
 class TenantMigrations extends Command
@@ -77,13 +78,15 @@ class TenantMigrations extends Command
             '--path'  => '/database/migrations/tenant',
         ]);
 
-        if ($artisan === 0) {
-            Artisan::call('db:seed', [
-                '--class'  => 'TenantsUserSeeder',
-            ]);
+        try {
+            if ($artisan === 0) {
+                Artisan::call('db:seed', [
+                    '--class'  => 'TenantsUserSeeder',
+                ]);
+            }
+        }catch (QueryException $e) {}
 
-            $this->info("Migrations Run Success {$tenant->name}");
-        }
+        $this->info("Migrations Run Success {$tenant->name}");
 
         $this->info("End Connecting Tenant {$tenant->name}");
         $this->info('-------------------------------------');
