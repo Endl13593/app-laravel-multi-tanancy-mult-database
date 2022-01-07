@@ -30,7 +30,7 @@ class TenantMiddleware
         } else if ($request->url() != route('404.tenant') && !$managerTenant->domainIsMain()){
             $managerTenant->setConnection($tenant);
 
-            $this->setSessionTenant($tenant->only(['name']));
+            $this->setSessionTenant($tenant->only(['name', 'uuid']));
         }
 
         return $next($request);
