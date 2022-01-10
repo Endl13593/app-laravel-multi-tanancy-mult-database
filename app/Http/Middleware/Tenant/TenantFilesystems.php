@@ -17,19 +17,27 @@ class TenantFilesystems
     public function handle(Request $request, Closure $next)
     {
         if ($request->getHost() !== config('tenant.domain_main')) {
-            $this->setConfig();
+            if (!$this->setConfig()) {
+                abort(403);
+            }
         }
-        
+
         return $next($request);
     }
 
-    private function setConfig()
+    private function setConfig(): bool
     {
-        $uuid = session('tenant')['uuid'];
+        if (isset(session('tenant')['uuid'])) {
+            $uuid = session('tenant')['uuid'];
 
-        config()->set([
-            'filesystems.disks.tenant.root' => config('filesystems.disks.tenant.root') . "/{$uuid}",
-            'filesystems.disks.tenant.url'  => config('filesystems.disks.tenant.url') . "/{$uuid}"
-        ]);
+            config()->set([
+                'filesystems.disks.tenant.root' => config('filesystems.disks.tenant.root') . "/{$uuid}",
+                'filesystems.disks.tenant.url'  => config('filesystems.disks.tenant.url') . "/{$uuid}"
+            ]);
+
+            return true;
+        }
+
+        return false;
     }
 }
