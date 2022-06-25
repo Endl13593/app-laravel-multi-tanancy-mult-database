@@ -1,15 +1,15 @@
 
 # Laravel Multi Tenancy Multi Database
 
-### Passo a passo
-Crie o Arquivo .env
+### step by step
+Create file .env
 ```sh
 cd example-project/
 cp .env.example .env
 ```
 
 
-Atualize as variáveis de ambiente do arquivo .env
+Update file environment variables .env
 ```dosini
 APP_NAME=NameApp
 APP_URL=http://localhost:8180
@@ -31,29 +31,29 @@ REDIS_PORT=6379
 ```
 
 
-Suba os containers do projeto
+Up project containers
 ```sh
 docker-compose up -d
 ```
 
 
-Acessar o container
+Access the container
 ```sh
 docker-compose exec app-laravel-multi-tenancy bash
 ```
 
 
-Instalar as dependências do projeto
+Install project dependencies
 ```sh
 composer install
 ```
 
 
-Gerar a key do projeto Laravel
+Generate the project key
 ```sh
 php artisan key:generate
 ```
 
 
-Acesse o projeto
+Access the project
 [http://localhost:8180](http://localhost:8180)
