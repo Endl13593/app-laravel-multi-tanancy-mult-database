@@ -1,7 +1,7 @@
 
 # Laravel Multi Tenancy Multi Database
 
-### step by step
+## Step by step
 Create file .env
 ```sh
 cd example-project/
@@ -55,5 +55,12 @@ php artisan key:generate
 ```
 
 
+Run main database migrations and seed
+```sh
+php artisan migrate --seed
+```
+
+Add domain ```webmaster.multitenancy.local``` in file hosts of the system.
+
 Access the project
-[http://localhost:8180](http://localhost:8180)
+[http://webmaster.multitenancy.local:8180](http://webmaster.multitenancy.local:8180)
