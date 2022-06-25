@@ -14,10 +14,9 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'Suporte Tenants',
-            'email' => 'suporte@gmail.com',
-            'password' =>  bcrypt('password')
-        ]);
+        User::updateOrCreate(
+            ['email' => 'suporte@gmail.com'],
+            ['name' => 'Suporte Tenants','password' =>  bcrypt('password')]
+        );
     }
 }

@@ -14,10 +14,9 @@ class TenantsUserSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'Suporte Admin',
-            'email' => 'suporte@gmail.com',
-            'password' =>  bcrypt('password')
-        ]);
+        User::updateOrCreate(
+            ['email' => 'suporte@gmail.com',],
+            ['name' => 'Suporte Admin', 'password' =>  bcrypt('password')]
+        );
     }
 }
